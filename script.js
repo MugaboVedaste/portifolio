@@ -1,3 +1,119 @@
+// Matrix Rain Animation
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Matrix characters - mix of code symbols and data
+const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*(){}[]<>/\\|~`+-=';
+const codeWords = ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'while', 'class', 'def', 'import', 'return', 'async', 'await', 'try', 'catch'];
+const chars = matrixChars.split('');
+
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+// Initialize drops
+for (let i = 0; i < columns; i++) {
+    drops[i] = Math.random() * -100;
+}
+
+// Draw matrix rain
+function drawMatrix() {
+    // Semi-transparent black to create trailing effect
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+        // Random character or code word
+        const text = Math.random() > 0.95 ? 
+            codeWords[Math.floor(Math.random() * codeWords.length)] : 
+            chars[Math.floor(Math.random() * chars.length)];
+
+        // Gradient effect - brighter at the tip
+        const gradient = ctx.createLinearGradient(0, drops[i] * fontSize, 0, (drops[i] + 1) * fontSize);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
+        ctx.fillStyle = gradient;
+
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        // Reset drop to top randomly
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+}
+
+// Animation loop
+setInterval(drawMatrix, 50);
+
+// Loading Screen
+window.addEventListener('load', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    setTimeout(() => {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 500);
+    }, 1500);
+});
+
+// Typing Animation Effect
+const typingElement = document.getElementById('typing');
+const texts = [
+    'Vedaste MUGABO',
+    'Backend Developer',
+    'Software Tester',
+    'Data Enthusiast',
+    'Translator'
+];
+let textIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+
+function typeText() {
+    const currentText = texts[textIndex];
+    
+    if (isDeleting) {
+        typingElement.textContent = currentText.substring(0, charIndex - 1);
+        charIndex--;
+        typingSpeed = 50;
+    } else {
+        typingElement.textContent = currentText.substring(0, charIndex + 1);
+        charIndex++;
+        typingSpeed = 100;
+    }
+    
+    if (!isDeleting && charIndex === currentText.length) {
+        // Pause at end of text
+        typingSpeed = 2000;
+        isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        textIndex = (textIndex + 1) % texts.length;
+        typingSpeed = 500;
+    }
+    
+    setTimeout(typeText, typingSpeed);
+}
+
+// Start typing animation when page loads
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(typeText, 500);
+});
+
 // Mobile Navigation Toggle
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');

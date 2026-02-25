@@ -15,10 +15,17 @@
     />
   </head>
   <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <img src="assets/images/logo1.png" alt="VM Logo" class="loading-logo" />
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar">
       <div class="container">
-        <div class="nav-brand">Vedaste MUGABO</div>
+        <div class="nav-brand">
+          <img src="assets/images/logo1.png" alt="VM Logo" class="nav-logo" />
+        </div>
         <button class="nav-toggle" id="navToggle">
           <span></span>
           <span></span>
@@ -37,14 +44,12 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+      <canvas id="matrixCanvas"></canvas>
       <div class="hero-content">
         <div class="hero-text">
           <h1 class="hero-title">
-            Hi, I'm <span class="highlight">Vedaste MUGABO</span>
+            Hi, I'm <span class="highlight" id="typing"></span>
           </h1>
-          <p class="hero-subtitle">
-            Backend Developer | Software Tester | Data Science Enthusiast
-          </p>
           <p class="hero-description">
             Computer Science student passionate about building scalable backend
             systems, ensuring software quality, and solving real-world problems
@@ -75,13 +80,25 @@
         <div class="about-content">
           <div class="about-text">
             <p>
-              I'm a motivated software developer with a strong focus on backend engineering and system design. I enjoy transforming complex ideas into structured, scalable, and efficient applications that solve real-world challenges. Building clean architecture and writing maintainable code are core principles in every project I work on.
+              I'm a motivated software developer with a strong focus on backend
+              engineering and system design. I enjoy transforming complex ideas
+              into structured, scalable, and efficient applications that solve
+              real-world challenges. Building clean architecture and writing
+              maintainable code are core principles in every project I work on.
             </p>
             <p>
-              With experience in <strong>Django</strong>, <strong>Java-based systems</strong>, and <strong>RESTful API development</strong>, I aim to create secure and high-performing solutions that are both practical and sustainable. Beyond backend development, I have worked in software testing, data analysis, and multilingual digital services, which has strengthened my attention to detail and problem-solving mindset.
+              With experience in <strong>Django</strong>,
+              <strong>Java-based systems</strong>, and
+              <strong>RESTful API development</strong>, I aim to create secure
+              and high-performing solutions that are both practical and
+              sustainable. Beyond backend development, I have worked in software
+              testing, data analysis, and multilingual digital services, which
+              has strengthened my attention to detail and problem-solving
+              mindset.
             </p>
             <p class="about-goal">
-              I'm committed to continuous growth, collaboration, and delivering technology solutions that create meaningful impact.
+              I'm committed to continuous growth, collaboration, and delivering
+              technology solutions that create meaningful impact.
             </p>
           </div>
         </div>
@@ -114,6 +131,14 @@
                 <span class="tag">JSP/Servlet</span>
                 <span class="tag">MySQL</span>
               </div>
+              <div class="project-links">
+                <a
+                  href="https://github.com/MugaboVedaste/OSMS"
+                  target="_blank"
+                  class="btn-link"
+                  ><i class="fab fa-github"></i> Repository</a
+                >
+              </div>
               <button class="btn-details" onclick="openModal('osms')">
                 View Details
               </button>
@@ -132,6 +157,14 @@
                 <span class="tag">Python</span>
                 <span class="tag">Django</span>
                 <span class="tag">DRF</span>
+              </div>
+              <div class="project-links">
+                <a
+                  href="https://github.com/MugaboVedaste/Inventory-Management-API"
+                  target="_blank"
+                  class="btn-link"
+                  ><i class="fab fa-github"></i> Repository</a
+                >
               </div>
               <button class="btn-details" onclick="openModal('inventory')">
                 View Details
@@ -153,6 +186,14 @@
                 <span class="tag">Python</span>
                 <span class="tag">Django</span>
                 <span class="tag">SQLite</span>
+              </div>
+              <div class="project-links">
+                <a
+                  href="https://github.com/MugaboVedaste/HangaArt"
+                  target="_blank"
+                  class="btn-link"
+                  ><i class="fab fa-github"></i> Repository</a
+                >
               </div>
               <button class="btn-details" onclick="openModal('hangart')">
                 View Details
@@ -399,7 +440,7 @@
             <div class="contact-items">
               <div class="contact-item">
                 <i class="fas fa-envelope"></i>
-                <span>vedaste.mugabo@example.com</span>
+                <span>vedasteapp@gmail.com.com</span>
               </div>
               <div class="contact-item">
                 <i class="fas fa-map-marker-alt"></i>
@@ -411,11 +452,18 @@
               </div>
             </div>
             <div class="social-links">
-              <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-              <a href="#" class="social-link"
-                ><i class="fab fa-linkedin"></i
+              <a
+                href="https://github.com/MugaboVedaste"
+                target="_blank"
+                class="social-link"
+                ><i class="fab fa-github"></i
               ></a>
-              <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+              <a href="#" target="_blank" class="social-link"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" target="_blank" class="social-link"
+                ><i class="fab fa-twitter"></i
+              ></a>
             </div>
           </div>
           <div class="contact-form">
