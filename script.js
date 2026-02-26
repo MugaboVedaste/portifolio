@@ -338,4 +338,46 @@ document.querySelectorAll('.project-card, .experience-card, .skill-category').fo
     observer.observe(el);
 });
 
+// Certificates Carousel
+let currentSlide = 0;
+const slides = document.querySelectorAll('.certificate-slide');
+const dots = document.querySelectorAll('.dot');
+const totalSlides = slides.length;
+
+function showSlide(index) {
+    // Wrap around
+    if (index >= totalSlides) {
+        currentSlide = 0;
+    } else if (index < 0) {
+        currentSlide = totalSlides - 1;
+    } else {
+        currentSlide = index;
+    }
+
+    // Hide all slides
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+
+    // Show current slide
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+}
+
+function nextCertificate() {
+    showSlide(currentSlide + 1);
+}
+
+function prevCertificate() {
+    showSlide(currentSlide - 1);
+}
+
+function goToSlide(index) {
+    showSlide(index);
+}
+
+// Auto-advance carousel every 5 seconds
+setInterval(() => {
+    nextCertificate();
+}, 5000);
+
 console.log('Portfolio loaded successfully! 🚀');

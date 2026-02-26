@@ -207,10 +207,16 @@ h1, h2, h3, h4 {
 .hero-title {
     font-size: 3rem;
     margin-bottom: 1rem;
+    min-height: 7rem;
 }
 
 .highlight {
     color: var(--primary-color);
+    display: inline;
+    line-height: 1.2;
+    vertical-align: top;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 #typing::after {
@@ -387,6 +393,26 @@ h1, h2, h3, h4 {
 .project-icon i {
     font-size: 1.8rem;
     color: white;
+}
+
+.project-image {
+    margin: 1rem 0 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.project-image img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.03);
 }
 
 .project-title {
@@ -687,6 +713,169 @@ h1, h2, h3, h4 {
     border-color: var(--primary-color);
 }
 
+/* Certificates Section */
+.certificates {
+    padding: 80px 20px;
+    background: #1e293b;
+}
+
+.certificates-carousel {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.certificate-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0f172a;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.certificate-slide {
+    display: none;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.certificate-slide.active {
+    display: block;
+}
+
+.certificate-slide img {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid #334155;
+}
+
+.certificate-slide h4 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.certificate-slide p {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.pdf-certificates {
+    max-width: 800px;
+    margin: 3rem auto 0;
+    text-align: center;
+}
+
+.pdf-certificates h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pdf-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.pdf-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 12px 20px;
+    background: #0f172a;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    transition: all 0.3s;
+}
+
+.pdf-link:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.pdf-link i {
+    font-size: 1.2rem;
+    color: #ef4444;
+}
+
+.pdf-link:hover i {
+    color: white;
+}
+
+.carousel-btn {
+    background: var(--gradient);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #334155;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background: var(--primary-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* Footer */
 .footer {
     background: #111827;
@@ -778,6 +967,15 @@ h1, h2, h3, h4 {
 
     .hero-buttons {
         justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-buttons .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        width: 200px;
+        text-align: center;
     }
 
     .profile-img {
