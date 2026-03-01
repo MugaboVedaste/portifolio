@@ -308,11 +308,33 @@ window.onclick = function(event) {
     }
 }
 
-// Contact Form Submission
+// Contact Form Submission (sends via EmailJS)
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    alert('Thank you for your message! I will get back to you soon.');
-    this.reset();
+    const form = this;
+    const name = form.querySelector('input[type="text"]').value.trim();
+    const email = form.querySelector('input[type="email"]').value.trim();
+    const message = form.querySelector('textarea').value.trim();
+
+    // Replace with your EmailJS Service ID
+    const serviceID = 'service_khydfnh';
+    const templateID = 'template_3pss5mb';
+
+    // Template parameters expected by EmailJS template: `from_name`, `email`, `message`
+    const templateParams = {
+        from_name: name,
+        email: email,
+        message: message
+    };
+
+    emailjs.send(serviceID, templateID, templateParams)
+        .then(() => {
+            alert('Thank you for your message! I will get back to you soon.');
+            form.reset();
+        }, (err) => {
+            console.error('EmailJS error:', err);
+            alert('Sorry — message failed to send. Please try again later.');
+        });
 });
 
 // Add animation on scroll
