@@ -746,35 +746,57 @@ h1, h2, h3, h4 {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.certificate-slide {
-    display: none;
-    text-align: center;
-    animation: fadeIn 0.5s ease-in-out;
+/* Track-style horizontal carousel */
+.certificate-track {
+    display: flex;
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(.2,.9,.2,1);
+    will-change: transform;
 }
 
-.certificate-slide.active {
-    display: block;
+
+.certificate-slide {
+    display: flex;
+    flex-direction: column; /* image on top, meta below */
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 260px; /* reserve space to avoid layout shifts when slides change */
+    padding: 0.5rem 1rem;
+    flex: 0 0 100%; /* each slide takes full container width */
+    text-align: center;
 }
 
 .certificate-slide img {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
+    width: auto;
+    height: 220px; /* fixed visual height to reduce layout shift */
+    max-height: 220px;
     object-fit: contain;
     border-radius: 8px;
-    margin-bottom: 1rem;
     border: 1px solid #334155;
+    display: block;
+    margin: 0 auto;
 }
 
-.certificate-slide h4 {
+.certificate-meta {
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.certificate-meta h4 {
     color: var(--primary-color);
     font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+    margin: 0 0 0.25rem 0;
 }
 
-.certificate-slide p {
+.certificate-meta p {
     color: var(--text-light);
     font-size: 1rem;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .pdf-certificates {
@@ -995,6 +1017,24 @@ h1, h2, h3, h4 {
 
     .experience-grid {
         grid-template-columns: 1fr;
+    }
+    .experience-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Certificates carousel: reduce image height on small screens to avoid overflow/shift */
+    .certificate-container {
+        padding: 1rem;
+        min-height: 220px;
+    }
+
+    .certificate-slide {
+        min-height: 180px;
+    }
+
+    .certificate-slide img {
+        height: 140px;
+        max-height: 140px;
     }
 
     .section-title {

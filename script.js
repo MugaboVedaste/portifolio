@@ -360,11 +360,22 @@ document.querySelectorAll('.project-card, .experience-card, .skill-category').fo
     observer.observe(el);
 });
 
-// Certificates Carousel
+// Certificates Carousel (horizontal sliding track)
 let currentSlide = 0;
+const certificateTrack = document.querySelector('.certificate-track');
 const slides = document.querySelectorAll('.certificate-slide');
 const dots = document.querySelectorAll('.dot');
 const totalSlides = slides.length;
+
+function updateTrackPosition() {
+    if (!certificateTrack) return;
+    certificateTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+}
+
+function updateDots() {
+    dots.forEach(dot => dot.classList.remove('active'));
+    if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+}
 
 function showSlide(index) {
     // Wrap around
@@ -376,13 +387,8 @@ function showSlide(index) {
         currentSlide = index;
     }
 
-    // Hide all slides
-    slides.forEach(slide => slide.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-
-    // Show current slide
-    slides[currentSlide].classList.add('active');
-    dots[currentSlide].classList.add('active');
+    updateTrackPosition();
+    updateDots();
 }
 
 function nextCertificate() {
@@ -396,6 +402,9 @@ function prevCertificate() {
 function goToSlide(index) {
     showSlide(index);
 }
+
+// Initialize position
+showSlide(0);
 
 // Auto-advance carousel every 5 seconds
 setInterval(() => {
