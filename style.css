@@ -219,6 +219,12 @@ h1, h2, h3, h4 {
     white-space: normal;
 }
 
+#typing {
+    display: inline-block;
+    /* Reserve width to prevent layout shift while typing. 16ch covers the longest title reasonably. */
+    min-width: 16ch;
+}
+
 #typing::after {
     content: '|';
     animation: blink 0.7s infinite;
