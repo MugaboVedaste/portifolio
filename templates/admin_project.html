@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>{{ 'Edit' if editing else 'Add' }} project</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="admin">
+    <div class="wrap">
+      <div class="top">
+        <h1>{{ 'Edit project' if editing else 'Add project' }}</h1>
+        <a href="{{ url_for('admin') }}#projects" class="btn btn-secondary small-btn">&larr; Back</a>
+      </div>
+
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="msg {{ category }}">{{ message }}</div>
+      {% endfor %}
+
+      <form class="card" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+
+        <div class="grid2">
+          <div>
+            <label for="category">Category *</label>
+            <input type="text" id="category" name="category" list="cats" maxlength="60" required
+                   placeholder="e.g. Backend Development" value="{{ project.category or '' }}" />
+            <datalist id="cats">
+              {% for c in categories %}<option value="{{ c }}">{% endfor %}
+            </datalist>
+          </div>
+          <div>
+            <label for="icon">Icon</label>
+            <select id="icon" name="icon">
+              {% for i in ICONS %}
+              <option value="{{ i }}" {% if project.icon == i %}selected{% endif %}>{{ i[3:] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <label for="title">Title *</label>
+        <input type="text" id="title" name="title" maxlength="120" required value="{{ project.title or '' }}" />
+
+        <label for="brief">Short description (shown on the card)</label>
+        <input type="text" id="brief" name="brief" maxlength="300" value="{{ project.brief or '' }}" />
+
+        <label for="tags">Card tags (comma separated, max 8)</label>
+        <input type="text" id="tags" name="tags" placeholder="Python, Django, SQLite" value="{{ project.tags or '' }}" />
+
+        <div class="grid2">
+          <div>
+            <label for="repo_url">Repository link</label>
+            <input type="text" id="repo_url" name="repo_url" placeholder="https://github.com/..." value="{{ project.repo_url or '' }}" />
+          </div>
+          <div>
+            <label for="live_url">Live site link</label>
+            <input type="text" id="live_url" name="live_url" placeholder="https://..." value="{{ project.live_url or '' }}" />
+          </div>
+        </div>
+
+        <label for="image">Screenshot (optional – PNG, JPG, WEBP, max 4 MB)</label>
+        {% if editing and project.image_url %}
+          <p class="hint">Current: <a href="{{ project.image_url }}" target="_blank" rel="noopener" style="color:var(--primary-color)">view image</a>
+            &nbsp;·&nbsp; <label style="display:inline"><input type="checkbox" name="remove_image" value="1" /> remove it</label></p>
+        {% endif %}
+        <input type="file" id="image" name="image" accept=".png,.jpg,.jpeg,.webp,image/*" />
+
+        <h2 style="margin-top:1rem">“View Details” content</h2>
+
+        <label for="overview">Overview *</label>
+        <textarea id="overview" name="overview" rows="4" maxlength="2000" required>{{ project.overview or '' }}</textarea>
+
+        <label for="implemented">What I implemented (one item per line)</label>
+        <textarea id="implemented" name="implemented" rows="5">{{ project.implemented or '' }}</textarea>
+
+        <label for="technologies">Technologies used (comma separated)</label>
+        <input type="text" id="technologies" name="technologies" value="{{ project.technologies or '' }}" />
+
+        <label for="learning">Key learning outcome</label>
+        <textarea id="learning" name="learning" rows="3" maxlength="1000">{{ project.learning or '' }}</textarea>
+
+        <button class="btn btn-primary" type="submit">{{ 'Save changes' if editing else 'Add project' }}</button>
+      </form>
+    </div>
+  </body>
+</html>

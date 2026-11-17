@@ -1,3 +1,4 @@
+{% from "_cards.html" import category_block %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -31,7 +32,7 @@
         <ul class="nav-menu" id="navMenu">
           <li><a href="#home">Home</a></li>
           <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
+          <li><a href="/projects">Projects</a></li>
           <li><a href="#skills">Skills</a></li>
           <li><a href="#experience">Experience</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -59,7 +60,7 @@
         </div>
         <div class="hero-image">
           <img
-            src="assets/images/profile1.jpg"
+            src="{{ profile_url|cld_opt }}"
             alt="Vedaste MUGABO"
             class="profile-img"
           />
@@ -107,219 +108,14 @@
       <div class="container">
         <h2 class="section-title">Projects</h2>
 
-        <!-- Backend Projects -->
-        <div class="project-category">
-          <h3 class="category-title">Backend Development</h3>
-          <div class="projects-grid">
-            <!-- OSMS Project -->
-            <div class="project-card" data-project="osms">
-              <div class="project-icon">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-              <div class="project-image">
-                <img
-                  src="assets/images/OSMS.png"
-                  alt="OSMS landing page"
-                  loading="lazy"
-                />
-              </div>
-              <h4 class="project-title">
-                OSMS – Online Shopping Management System
-              </h4>
-              <p class="project-brief">
-                Role-based web application for managing online shopping
-                operations
-              </p>
-              <div class="project-tags">
-                <span class="tag">Java</span>
-                <span class="tag">JSP/Servlet</span>
-                <span class="tag">MySQL</span>
-              </div>
-              <div class="project-links">
-                <a
-                  href="https://github.com/MugaboVedaste/OSMS"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fab fa-github"></i> Repository</a
-                >
-              </div>
-              <button class="btn-details" onclick="openModal('osms')">
-                View Details
-              </button>
-            </div>
-
-            <!-- Inventory API Project -->
-            <div class="project-card" data-project="inventory">
-              <div class="project-icon">
-                <i class="fas fa-boxes"></i>
-              </div>
-              <h4 class="project-title">Inventory Management API</h4>
-              <p class="project-brief">
-                RESTful backend API for inventory operations
-              </p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Django</span>
-                <span class="tag">DRF</span>
-              </div>
-              <div class="project-links">
-                <a
-                  href="https://github.com/MugaboVedaste/Inventory-Management-API"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fab fa-github"></i> Repository</a
-                >
-              </div>
-              <button class="btn-details" onclick="openModal('inventory')">
-                View Details
-              </button>
-            </div>
-
-            <!-- HangaArt Project -->
-            <div class="project-card" data-project="hangart">
-              <div class="project-icon">
-                <i class="fas fa-palette"></i>
-              </div>
-              <div class="project-image">
-                <img
-                  src="assets/images/hangart.png"
-                  alt="HangaArt landing page"
-                  loading="lazy"
-                />
-              </div>
-              <h4 class="project-title">
-                HangaArt – Creative Content Platform
-              </h4>
-              <p class="project-brief">
-                Django-based platform for managing creative content
-              </p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Django</span>
-                <span class="tag">SQLite</span>
-              </div>
-              <div class="project-links">
-                <a
-                  href="https://github.com/MugaboVedaste/HangaArt"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fab fa-github"></i> Repository</a
-                >
-                <a
-                  href="https://hangart-theta.vercel.app/"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fas fa-globe"></i> Live Site</a
-                >
-              </div>
-              <button class="btn-details" onclick="openModal('hangart')">
-                View Details
-              </button>
-            </div>
-          </div>
+        {% for category, items in categories %}
+{{ category_block(category, items) }}
+        {% endfor %}
+        {% if has_more %}
+        <div style="text-align: center; margin-top: 1rem">
+          <a href="/projects" class="btn btn-primary">View All Projects</a>
         </div>
-
-        <!-- Frontend Projects -->
-        <div class="project-category">
-          <h3 class="category-title">Frontend Development</h3>
-          <div class="projects-grid">
-            <!-- E-commerce Kush -->
-            <div class="project-card" data-project="kush">
-              <div class="project-icon">
-                <i class="fas fa-tshirt"></i>
-              </div>
-              <h4 class="project-title">e-Commerce Kush</h4>
-              <p class="project-brief">Responsive fashion e-commerce website</p>
-              <div class="project-tags">
-                <span class="tag">HTML</span>
-                <span class="tag">CSS</span>
-                <span class="tag">JavaScript</span>
-              </div>
-              <div class="project-links">
-                <a
-                  href="https://officiallykush.com/"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fas fa-globe"></i> Live Site</a
-                >
-              </div>
-              <button class="btn-details" onclick="openModal('kush')">
-                View Details
-              </button>
-            </div>
-
-            <!-- Phone Agreement -->
-            <div class="project-card" data-project="phone">
-              <div class="project-icon">
-                <i class="fas fa-mobile-alt"></i>
-              </div>
-              <h4 class="project-title">Phone Agreement Management System</h4>
-              <p class="project-brief">
-                Web-based phone contract management system
-              </p>
-              <div class="project-tags">
-                <span class="tag">HTML</span>
-                <span class="tag">CSS</span>
-                <span class="tag">JavaScript</span>
-              </div>
-              <div class="project-links">
-                <a
-                  href="https://github.com/MugaboVedaste/Phone-Agreement-Management"
-                  target="_blank"
-                  class="btn-link"
-                  ><i class="fab fa-github"></i> Repository</a
-                >
-              </div>
-              <button class="btn-details" onclick="openModal('phone')">
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Data Science Projects -->
-        <div class="project-category">
-          <h3 class="category-title">Data Science</h3>
-          <div class="projects-grid">
-            <!-- Housing Price Prediction -->
-            <div class="project-card" data-project="housing">
-              <div class="project-icon">
-                <i class="fas fa-home"></i>
-              </div>
-              <h4 class="project-title">Housing Price Prediction</h4>
-              <p class="project-brief">
-                Regression models for predicting housing prices
-              </p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Scikit-learn</span>
-                <span class="tag">Pandas</span>
-              </div>
-              <button class="btn-details" onclick="openModal('housing')">
-                View Details
-              </button>
-            </div>
-
-            <!-- Air Quality Analysis -->
-            <div class="project-card" data-project="airquality">
-              <div class="project-icon">
-                <i class="fas fa-wind"></i>
-              </div>
-              <h4 class="project-title">Air Quality Analysis</h4>
-              <p class="project-brief">
-                Environmental pollution data analysis and visualization
-              </p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Matplotlib</span>
-                <span class="tag">Pandas</span>
-              </div>
-              <button class="btn-details" onclick="openModal('airquality')">
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -469,41 +265,15 @@
           </button>
           <div class="certificate-container">
             <div class="certificate-track">
+              {% for c in images %}
               <div class="certificate-slide">
-                <img src="assets/certificates/40-alx-aice-ai-career-essentials-certificate-vedaste-mugabo(1).png" alt="ALX AICE AI Career Essentials Certificate" />
+                <img src="{{ c.url }}" alt="{{ c.title }}" />
                 <div class="certificate-meta">
-                  <h4>AI Career Essentials</h4>
-                  <p>ALX AICE</p>
+                  <h4>{{ c.title }}</h4>
+                  <p>{{ c.subtitle }}</p>
                 </div>
               </div>
-              <div class="certificate-slide">
-                <img src="assets/certificates/70-back-end-web-development-certificate-vedaste-mugabo.png" alt="Back-End Web Development Certificate" />
-                <div class="certificate-meta">
-                  <h4>Back-End Web Development</h4>
-                  <p>Professional Certificate</p>
-                </div>
-              </div>
-              <div class="certificate-slide">
-                <img src="assets/certificates/72-virtual-assistant-certificate-vedaste-mugabo.png" alt="Virtual Assistant Certificate" />
-                <div class="certificate-meta">
-                  <h4>Virtual Assistant</h4>
-                  <p>Professional Certificate</p>
-                </div>
-              </div>
-              <div class="certificate-slide">
-                <img src="assets/certificates/89-professional-foundations-certificate-vedaste-mugabo (1).png" alt="Professional Foundations Certificate" />
-                <div class="certificate-meta">
-                  <h4>Professional Foundations</h4>
-                  <p>Professional Certificate</p>
-                </div>
-              </div>
-              <div class="certificate-slide">
-                <img src="assets/certificates/CERTIFICATE OF PARTICIPATION (21).png" alt="Certificate of Participation" />
-                <div class="certificate-meta">
-                  <h4>Certificate of Participation</h4>
-                  <p>Event Participation</p>
-                </div>
-              </div>
+              {% endfor %}
             </div>
           </div>
           <button class="carousel-btn next" onclick="nextCertificate()">
@@ -511,27 +281,19 @@
           </button>
         </div>
         <div class="carousel-dots">
-          <span class="dot active" onclick="goToSlide(0)"></span>
-          <span class="dot" onclick="goToSlide(1)"></span>
-          <span class="dot" onclick="goToSlide(2)"></span>
-          <span class="dot" onclick="goToSlide(3)"></span>
-          <span class="dot" onclick="goToSlide(4)"></span>
+          {% for c in images %}
+          <span class="dot{% if loop.first %} active{% endif %}" onclick="goToSlide({{ loop.index0 }})"></span>
+          {% endfor %}
         </div>
         <div class="pdf-certificates">
           <h3>Additional Certificates (PDF)</h3>
           <div class="pdf-links">
-            <a href="assets/certificates/Course certificate.pdf" target="_blank" class="pdf-link">
+            {% for c in pdfs %}
+            <a href="{{ c.url }}" target="_blank" rel="noopener" class="pdf-link">
               <i class="fas fa-file-pdf"></i>
-              <span>Course Certificate</span>
+              <span>{{ c.title }}</span>
             </a>
-            <a href="assets/certificates/EF SET Certificate (4) (2)(1).pdf" target="_blank" class="pdf-link">
-              <i class="fas fa-file-pdf"></i>
-              <span>EF SET English Certificate</span>
-            </a>
-            <a href="assets/certificates/HIPAA CERTIFICATE_MLT HIPAA VEDASTE (1).pdf" target="_blank" class="pdf-link">
-              <i class="fas fa-file-pdf"></i>
-              <span>HIPAA Compliance Certificate</span>
-            </a>
+            {% endfor %}
           </div>
         </div>
       </div>
@@ -624,6 +386,7 @@
           });
        })();
     </script>
+    <script>window.PROJECT_DATA = {{ project_data|tojson }};</script>
     <script src="script.js"></script>
   </body>
 </html>

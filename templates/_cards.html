@@ -1,0 +1,39 @@
+{# One category block: same markup/classes as the original hand-written cards. #}
+{% macro category_block(category, items) %}
+        <div class="project-category">
+          <h3 class="category-title">{{ category }}</h3>
+          <div class="projects-grid">
+            {% for p in items %}
+            <div class="project-card" data-project="{{ p.slug }}">
+              <div class="project-icon">
+                <i class="fas {{ p.icon }}"></i>
+              </div>
+              {% if p.image_url %}
+              <div class="project-image">
+                <img src="{{ p.image_url }}" alt="{{ p.image_alt or p.title }}" loading="lazy" />
+              </div>
+              {% endif %}
+              <h4 class="project-title">{{ p.title }}</h4>
+              <p class="project-brief">{{ p.brief }}</p>
+              <div class="project-tags">
+                {% for t in p.tags %}<span class="tag">{{ t }}</span>
+                {% endfor %}
+              </div>
+              {% if p.repo_url or p.live_url %}
+              <div class="project-links">
+                {% if p.repo_url %}
+                <a href="{{ p.repo_url }}" target="_blank" rel="noopener" class="btn-link"><i class="fab fa-github"></i> Repository</a>
+                {% endif %}
+                {% if p.live_url %}
+                <a href="{{ p.live_url }}" target="_blank" rel="noopener" class="btn-link"><i class="fas fa-globe"></i> Live Site</a>
+                {% endif %}
+              </div>
+              {% endif %}
+              <button class="btn-details" onclick="openModal('{{ p.slug }}')">
+                View Details
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+{% endmacro %}

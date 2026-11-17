@@ -1,0 +1,72 @@
+{% from "_cards.html" import category_block %}<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="All projects by Vedaste MUGABO - Backend Developer, Software Tester, and Data Science Enthusiast"
+    />
+    <title>Projects - Vedaste MUGABO</title>
+    <link rel="icon" href="/assets/images/logofinal.png" type="image/png" />
+    <link rel="stylesheet" href="/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body>
+    <!-- Navigation (same as home; links point back to the home page sections) -->
+    <nav class="navbar">
+      <div class="container">
+        <div class="nav-brand">
+          <a href="/"><img src="/assets/images/logofinal.png" alt="VM Logo" class="nav-logo" /></a>
+        </div>
+        <button class="nav-toggle" id="navToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/#home">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/projects" style="color: var(--primary-color)">Projects</a></li>
+          <li><a href="/#skills">Skills</a></li>
+          <li><a href="/#experience">Experience</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section id="projects" class="projects" style="padding-top: 130px; min-height: 100vh">
+      <div class="container">
+        <h2 class="section-title">Projects</h2>
+        {% for category, items in categories %}
+{{ category_block(category, items) }}
+        {% else %}
+        <p style="text-align: center; color: var(--text-light)">No projects yet.</p>
+        {% endfor %}
+        <div style="text-align: center; margin-top: 1rem">
+          <a href="/" class="btn btn-secondary">&larr; Back to Home</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2026 Vedaste MUGABO. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <div id="projectModal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>window.PROJECT_DATA = {{ project_data|tojson }};</script>
+    <script src="/script.js"></script>
+  </body>
+</html>

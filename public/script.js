@@ -1,9 +1,10 @@
 // Matrix Rain Animation
 const canvas = document.getElementById('matrixCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 // Set canvas size
 function resizeCanvas() {
+    if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
@@ -16,7 +17,7 @@ const codeWords = ['function', 'const', 'let', 'var', 'if', 'else', 'for', 'whil
 const chars = matrixChars.split('');
 
 const fontSize = 14;
-const columns = canvas.width / fontSize;
+const columns = canvas ? canvas.width / fontSize : 0;
 const drops = [];
 
 // Initialize drops
@@ -26,6 +27,7 @@ for (let i = 0; i < columns; i++) {
 
 // Draw matrix rain
 function drawMatrix() {
+    if (!canvas) return;
     // Semi-transparent black to create trailing effect
     ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -61,6 +63,7 @@ setInterval(drawMatrix, 50);
 // Loading Screen
 window.addEventListener('load', () => {
     const loadingScreen = document.getElementById('loading-screen');
+    if (!loadingScreen) return;
     setTimeout(() => {
         loadingScreen.classList.add('fade-out');
         setTimeout(() => {
@@ -84,6 +87,7 @@ let isDeleting = false;
 let typingSpeed = 100;
 
 function typeText() {
+    if (!typingElement) return;
     const currentText = texts[textIndex];
     
     if (isDeleting) {
@@ -164,133 +168,52 @@ window.addEventListener('scroll', () => {
     });
 });
 
-// Project Modal Data
-const projectData = {
-    osms: {
-        title: 'OSMS – Online Shopping Management System',
-        overview: 'OSMS is a role-based web application designed to manage online shopping operations for administrators and sellers. The system supports product management, order processing, and user control with structured database integration.',
-        implemented: [
-            'Role-based authentication (Admin & Seller)',
-            'CRUD operations for products and orders',
-            'MySQL database schema design',
-            'JDBC database connectivity',
-            'Dynamic JSP rendering',
-            'Backend logic using Servlets'
-        ],
-        technologies: ['Java', 'JSP & Servlet', 'MySQL', 'JDBC', 'HTML, CSS', 'Bootstrap', 'Apache Tomcat'],
-        learning: 'Strengthened understanding of MVC architecture, session management, and database-driven web applications.'
-    },
-    inventory: {
-        title: 'Inventory Management API',
-        overview: 'A RESTful backend API built using Django and Django REST Framework to manage inventory operations such as product creation, stock updates, and data tracking.',
-        implemented: [
-            'REST API endpoints (GET, POST, PUT, DELETE)',
-            'Model relationships',
-            'Serializer configurations',
-            'Authentication mechanisms',
-            'Database integration',
-            'API testing with Postman'
-        ],
-        technologies: ['Python', 'Django', 'Django REST Framework', 'SQLite / MySQL', 'Postman'],
-        learning: 'Improved API design skills, backend architecture structuring, and scalable application logic.'
-    },
-    hangart: {
-        title: 'HangaArt – Creative Content Platform',
-        overview: 'HangaArt is a Django-based web application designed to manage and display artistic or creative content dynamically using database-driven templates.',
-        implemented: [
-            'Django models and relationships',
-            'Admin panel customization',
-            'Template inheritance',
-            'Dynamic content rendering',
-            'Static file management'
-        ],
-        technologies: ['Python', 'Django', 'HTML & CSS', 'SQLite', 'Django Admin'],
-        learning: 'Gained deeper knowledge of Django\'s full-stack capabilities and template rendering engine.'
-    },
-    kush: {
-        title: 'e-Commerce Kush',
-        overview: 'A responsive frontend e-commerce website developed to showcase fashion products with a clean and interactive layout.',
-        implemented: [
-            'Product display interface',
-            'Responsive design layout',
-            'Interactive UI components',
-            'Structured page navigation'
-        ],
-        technologies: ['HTML', 'CSS', 'JavaScript'],
-        learning: 'Strengthened frontend layout structuring and responsive design implementation.'
-    },
-    phone: {
-        title: 'Phone Agreement Management System',
-        overview: 'A web-based system prototype developed to manage phone contract agreements and customer records.',
-        implemented: [
-            'Structured forms for agreement data',
-            'Organized layout for contract display',
-            'User-friendly interface design'
-        ],
-        technologies: ['HTML', 'CSS', 'JavaScript'],
-        learning: 'Improved user interface structuring and form data organization.'
-    },
-    housing: {
-        title: 'Housing Price Prediction',
-        overview: 'Built regression models to predict housing prices using real-world datasets.',
-        implemented: [
-            'Data cleaning & preprocessing',
-            'Exploratory Data Analysis (EDA)',
-            'Train-test split',
-            'Linear regression modeling',
-            'Model evaluation (RMSE, R²)',
-            'Hyperparameter tuning'
-        ],
-        technologies: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Scikit-learn', 'Jupyter Notebook'],
-        learning: 'Developed practical understanding of regression algorithms and model optimization techniques.'
-    },
-    airquality: {
-        title: 'Air Quality Analysis',
-        overview: 'Analyzed environmental pollution data to identify patterns and trends using statistical and visualization techniques.',
-        implemented: [
-            'Data visualization',
-            'Feature correlation analysis',
-            'Trend identification',
-            'Statistical summaries'
-        ],
-        technologies: ['Python', 'Pandas', 'Matplotlib', 'Scikit-learn'],
-        learning: 'Enhanced data analysis and visualization skills for environmental data interpretation.'
-    }
-};
+// Project Modal Data (rendered by the Flask backend from the database)
+const projectData = window.PROJECT_DATA || {};
+
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value == null ? '' : String(value);
+    return div.innerHTML;
+}
 
 // Open Project Modal
 function openModal(projectId) {
     const project = projectData[projectId];
+    if (!project) return;
     const modal = document.getElementById('projectModal');
     const modalBody = document.getElementById('modalBody');
-    
-    let implementedList = project.implemented.map(item => `<li>${item}</li>`).join('');
-    let techList = project.technologies.map(tech => `<span class="tag">${tech}</span>`).join('');
-    
+
+    let implementedList = (project.implemented || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
+    let techList = (project.technologies || []).map(tech => `<span class="tag">${escapeHtml(tech)}</span>`).join('');
+
     modalBody.innerHTML = `
-        <h2>${project.title}</h2>
+        <h2>${escapeHtml(project.title)}</h2>
         <div style="margin-top: 1.5rem;">
             <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Overview</h3>
-            <p style="line-height: 1.7; color: var(--text-light);">${project.overview}</p>
+            <p style="line-height: 1.7; color: var(--text-light);">${escapeHtml(project.overview)}</p>
         </div>
+        ${implementedList ? `
         <div style="margin-top: 2rem;">
             <h3 style="color: var(--primary-color); margin-bottom: 1rem;">What I Implemented</h3>
             <ul style="list-style-position: inside; color: var(--text-light); line-height: 1.8;">
                 ${implementedList}
             </ul>
-        </div>
+        </div>` : ''}
+        ${techList ? `
         <div style="margin-top: 2rem;">
             <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Technologies Used</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                 ${techList}
             </div>
-        </div>
+        </div>` : ''}
+        ${project.learning ? `
         <div style="margin-top: 2rem; background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--success-color);">
             <h3 style="color: var(--success-color); margin-bottom: 0.5rem;">Key Learning Outcome</h3>
-            <p style="color: var(--text-light);">${project.learning}</p>
-        </div>
+            <p style="color: var(--text-light);">${escapeHtml(project.learning)}</p>
+        </div>` : ''}
     `;
-    
+
     modal.style.display = 'block';
 }
 
@@ -309,7 +232,8 @@ window.onclick = function(event) {
 }
 
 // Contact Form Submission (sends via EmailJS)
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+const contactForm = document.getElementById('contactForm');
+if (contactForm) contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
     const name = form.querySelector('input[type="text"]').value.trim();
@@ -410,5 +334,19 @@ showSlide(0);
 setInterval(() => {
     nextCertificate();
 }, 5000);
+
+// Visit counter: one anonymous ping per page per browser session (no cookies).
+try {
+    const visitKey = 'visit:' + location.pathname;
+    if (!sessionStorage.getItem(visitKey)) {
+        sessionStorage.setItem(visitKey, '1');
+        fetch('/api/visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: location.pathname, ref: document.referrer }),
+            keepalive: true
+        }).catch(() => {});
+    }
+} catch (e) { /* storage blocked: skip counting */ }
 
 console.log('Portfolio loaded successfully! 🚀');

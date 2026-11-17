@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body class="admin">
+    <form class="card login-box" method="post">
+      <h2>Admin Login</h2>
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="msg error">{{ message }}</div>
+      {% endfor %}
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+      <input type="password" name="password" placeholder="Password" required autofocus />
+      <button type="submit" class="btn btn-primary" style="width:100%">Log in</button>
+    </form>
+  </body>
+</html>
