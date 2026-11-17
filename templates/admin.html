@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Admin</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="admin">
+    <div class="wrap">
+      <div class="top">
+        <h1>Admin</h1>
+        <div>
+          <a href="/" class="btn btn-secondary small-btn" style="margin-right:.5rem">View site</a>
+          <form method="post" action="{{ url_for('admin_logout') }}" style="display:inline">
+            <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+            <button class="btn btn-primary small-btn" type="submit">Log out</button>
+          </form>
+        </div>
+      </div>
+
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="msg {{ category }}">{{ message }}</div>
+      {% endfor %}
+
+      <!-- ===================== Profile image ===================== -->
+      <div class="card" id="profile">
+        <h2>Profile image</h2>
+        <p class="hint">The photo shown on the home page. Pick one of the available images, or upload a new one (PNG, JPG, WEBP, max 4 MB).</p>
+        <div class="profile-grid">
+          {% for img in profiles %}
+          <div class="profile-item{% if img.is_active %} active{% endif %}">
+            <img src="{{ img.url|cld_opt(400) }}" alt="{{ img.label }}" loading="lazy" />
+            <div class="profile-label">{{ img.label }}{% if img.is_active %} <span class="badge">In use</span>{% endif %}</div>
+            <div class="profile-actions">
+              {% if not img.is_active %}
+              <form method="post" action="{{ url_for('admin_profile_use', image_id=img.id) }}">
+                <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+                <button class="btn btn-primary small-btn" type="submit">Use this</button>
+              </form>
+              <form method="post" action="{{ url_for('admin_profile_delete', image_id=img.id) }}"
+                    onsubmit="return confirm('Delete this image?')">
+                <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+                <button class="danger" type="submit">Delete</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <p class="hint">No images yet.</p>
+          {% endfor %}
+        </div>
+
+        <h3 style="margin: 1.2rem 0 .6rem; font-size: 1rem;">Upload a new profile image</h3>
+        <form method="post" action="{{ url_for('admin_profile_upload') }}" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+          <input type="text" name="label" placeholder="Name (optional, e.g. Graduation photo)" maxlength="80" />
+          <input type="file" name="file" accept=".png,.jpg,.jpeg,.webp,image/*" required />
+          <label style="display:flex; gap:.5rem; align-items:center; margin-bottom: .9rem;">
+            <input type="checkbox" name="activate" value="1" checked style="width:auto; margin:0" />
+            Use it as my profile image right away
+          </label>
+          <button class="btn btn-primary" type="submit">Upload</button>
+        </form>
+      </div>
+
+      <!-- ===================== Projects ===================== -->
+      <div class="card" id="projects">
+        <div class="card-head">
+          <h2>Projects ({{ projects|length }})</h2>
+          <a href="{{ url_for('admin_project_new') }}" class="btn btn-primary small-btn">+ Add project</a>
+        </div>
+        <p class="hint">The home page shows the first 3 projects of each category; all of them are on the Projects page.</p>
+        {% set ns = namespace(cat=None) %}
+        {% for p in projects|sort(attribute='category') %}
+          {% if p.category != ns.cat %}
+            {% set ns.cat = p.category %}
+            <div class="cat-label">{{ p.category }}</div>
+          {% endif %}
+          <div class="row">
+            {% if p.image_url %}
+              <img src="{{ p.image_url }}" alt="" loading="lazy" />
+            {% else %}
+              <div class="ico"><i class="fas {{ p.icon }}"></i></div>
+            {% endif %}
+            <div class="info">
+              <strong>{{ p.title }}</strong><br />
+              <small>{{ p.tags|join(', ') }}</small>
+            </div>
+            <div class="actions">
+              <a href="{{ url_for('admin_project_edit', project_id=p.id) }}" class="btn btn-secondary small-btn">Edit</a>
+              <form method="post" action="{{ url_for('admin_project_delete', project_id=p.id) }}"
+                    onsubmit="return confirm('Delete this project?')">
+                <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+                <button class="danger" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        {% else %}
+          <p class="hint">No projects yet.</p>
+        {% endfor %}
+      </div>
+
+      <!-- ===================== Certificates ===================== -->
+      <div class="card" id="certificates">
+        <h2>Upload a certificate</h2>
+        <p class="hint">PNG, JPG, WEBP images show in the carousel; PDFs show in “Additional Certificates”. Max 4 MB.</p>
+        <form method="post" action="{{ url_for('admin_upload') }}" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+          <input type="text" name="title" placeholder="Title (e.g. Back-End Web Development)" maxlength="120" required />
+          <input type="text" name="subtitle" placeholder="Subtitle (e.g. Professional Certificate) – images only" maxlength="120" />
+          <input type="file" name="file" accept=".png,.jpg,.jpeg,.webp,.pdf,image/*,application/pdf" required />
+          <button class="btn btn-primary" type="submit">Upload</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Current certificates ({{ certs|length }})</h2>
+        {% for c in certs %}
+        <div class="row">
+          {% if c.kind == 'image' %}
+            <img src="{{ c.url }}" alt="" loading="lazy" />
+          {% else %}
+            <div class="ico"><i class="fas fa-file-pdf"></i></div>
+          {% endif %}
+          <div class="info">
+            <strong>{{ c.title }}</strong><br />
+            <small>{{ c.kind }}{% if c.subtitle %} · {{ c.subtitle }}{% endif %}</small>
+          </div>
+          <form method="post" action="{{ url_for('admin_delete', cert_id=c.id) }}"
+                onsubmit="return confirm('Delete this certificate?')">
+            <input type="hidden" name="csrf" value="{{ csrf_token() }}" />
+            <button class="danger" type="submit">Delete</button>
+          </form>
+        </div>
+        {% else %}
+        <p class="hint">No certificates yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
