@@ -459,7 +459,8 @@ ICON_RE = re.compile(r"^fa-[a-z0-9-]{1,40}$")
 ICONS = ["fa-folder", "fa-shopping-cart", "fa-boxes", "fa-palette", "fa-tshirt",
          "fa-mobile-alt", "fa-home", "fa-wind", "fa-code", "fa-server", "fa-database",
          "fa-chart-line", "fa-robot", "fa-globe", "fa-mobile", "fa-cogs", "fa-book",
-         "fa-gamepad", "fa-heartbeat", "fa-graduation-cap"]
+         "fa-gamepad", "fa-heartbeat", "fa-graduation-cap", "fa-plane", "fa-bolt",
+         "fa-film", "fa-hospital"]
 app.jinja_env.globals["ICONS"] = ICONS
 
 

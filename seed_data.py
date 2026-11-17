@@ -23,9 +23,34 @@ BACKEND = "Backend Development"
 FRONTEND = "Frontend Development"
 DATA = "Data Science"
 
+DATA_ENG = "Data Engineering"
+
+
+def _de(slug, icon, title, brief, tags):
+    """Data Engineering project; the brief doubles as the overview shown in 'View Details'."""
+    return dict(slug=slug, category=DATA_ENG, icon=icon, title=title, brief=brief,
+                tags=tags, repo_url="", live_url="", image_url="", image_alt="",
+                overview=brief, implemented=[], technologies=tags, learning="")
+
+
+DATA_ENGINEERING = [
+    _de("flight-price-pipeline", "fa-plane", "Flight Price Analysis Pipeline",
+        "An automated data engineering pipeline for extracting, validating, transforming, and analyzing flight-price data.",
+        ["Python", "Apache Airflow", "Docker", "PostgreSQL", "MySQL", "Redis"]),
+    _de("realtime-ingestion", "fa-bolt", "Real-Time Data Ingestion",
+        "Developed a real-time data ingestion pipeline using Spark Structured Streaming to process incoming events and store them in PostgreSQL.",
+        ["Python", "Apache Spark", "PostgreSQL", "Structured Streaming"]),
+    _de("tmdb-movie-analysis", "fa-film", "TMDB Movie Data Analysis",
+        "Built a modular PySpark project to extract, clean, transform, and analyze movie datasets.",
+        ["Python", "PySpark", "Pandas", "TMDB API"]),
+    _de("healthcare-warehouse", "fa-hospital", "Healthcare Analytics Data Warehouse",
+        "Designed a dimensional data warehouse using a star schema to support healthcare reporting and analytical queries.",
+        ["MySQL", "SQL", "Data Warehousing", "Star Schema"]),
+]
+
 # slug, category, title, brief, icon, tags, repo_url, live_url, image_url,
 # overview, implemented, technologies, learning
-PROJECTS = [
+PROJECTS = DATA_ENGINEERING + [
     dict(
         slug="osms", category=BACKEND, icon="fa-shopping-cart",
         title="OSMS – Online Shopping Management System",

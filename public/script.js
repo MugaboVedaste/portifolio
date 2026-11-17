@@ -76,9 +76,10 @@ window.addEventListener('load', () => {
 const typingElement = document.getElementById('typing');
 const texts = [
     'Vedaste MUGABO',
+    'Data Engineer',
+    'Data Scientist',
     'Backend Developer',
     'Software Tester',
-    'Data Enthusiast',
     'Translator'
 ];
 let textIndex = 0;

@@ -1091,3 +1091,18 @@ h1, h2, h3, h4 {
         grid-template-columns: 1fr;
     }
 }
+
+/* Hero tagline (roles) and experience company/date line */
+.hero-tagline {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.exp-meta {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: -0.5rem 0 1rem;
+}
