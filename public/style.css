@@ -241,6 +241,14 @@ h1, h2, h3, h4 {
     margin-bottom: 1rem;
 }
 
+.hero-tagline {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
 .hero-description {
     font-size: 1.1rem;
     color: var(--text-light);
@@ -1016,13 +1024,44 @@ h1, h2, h3, h4 {
         display: flex;
     }
 
+    /* Phones: show the photo first (smaller) so it is visible without scrolling */
+    .hero {
+        padding: 110px 20px 50px;
+        justify-content: flex-start;
+    }
+
     .hero-content {
         grid-template-columns: 1fr;
         text-align: center;
+        gap: 0.5rem;
+    }
+
+    /* Order on phones: heading, photo, roles, description, buttons */
+    .hero-text {
+        display: contents;
     }
 
     .hero-title {
+        order: -2;
         font-size: 2rem;
+        min-height: 4.5rem;
+        margin-bottom: 0;
+    }
+
+    .hero-image {
+        order: -1;
+        margin: 0.5rem 0 0.75rem;
+    }
+
+    .hero-tagline {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        line-height: 1.7;
     }
 
     .hero-buttons {
@@ -1039,8 +1078,9 @@ h1, h2, h3, h4 {
     }
 
     .profile-img {
-        width: 250px;
-        height: 250px;
+        width: clamp(150px, 46vw, 200px);
+        height: clamp(150px, 46vw, 200px);
+        border-width: 5px;
     }
 
     .contact-content {
@@ -1093,14 +1133,6 @@ h1, h2, h3, h4 {
 }
 
 /* Hero tagline (roles) and experience company/date line */
-.hero-tagline {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
 .exp-meta {
     color: var(--primary-color);
     font-weight: 600;
