@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Admin – Analytics</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body class="admin">
+    <div class="wrap">
+      <div class="top">
+        <h1>Site analytics</h1>
+        <div>
+          <a href="{{ url_for('admin') }}" class="btn btn-secondary small-btn">&larr; Back to admin</a>
+        </div>
+      </div>
+
+      <div class="range">
+        {% for d in (7, 30, 90) %}
+        <a href="{{ url_for('admin_analytics', days=d) }}" class="{{ 'on' if d == days else '' }}">Last {{ d }} days</a>
+        {% endfor %}
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="num">{{ totals.visits }}</div><div class="lbl">Visits</div></div>
+        <div class="stat"><div class="num">{{ totals.people }}</div><div class="lbl">Unique visitors</div></div>
+        <div class="stat"><div class="num">{{ today }}</div><div class="lbl">Today (UTC)</div></div>
+        <div class="stat"><div class="num">{{ totals.countries }}</div><div class="lbl">Countries</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Visits per day</h2>
+        {% if totals.visits %}
+        <div class="chart" role="img" aria-label="Bar chart of visits per day over the last {{ days }} days">
+          {% for d, n in daily %}
+          <div class="col" title="{{ d.strftime('%d %b %Y') }}: {{ n }} visit{{ '' if n == 1 else 's' }}">
+            <div class="bar" style="height: {{ (n * 100 / max_daily)|round|int if n else 0 }}%"></div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="axis"><span>{{ daily[0][0].strftime('%d %b') }}</span><span>peak {{ max_daily }}/day</span><span>{{ daily[-1][0].strftime('%d %b') }}</span></div>
+        {% else %}
+        <p class="hint">No visits recorded yet. They appear here after people open your site (your own visits while logged in as admin are not counted).</p>
+        {% endif %}
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <h2>Countries</h2>
+          {% for c in countries %}
+          <div class="meter"><div class="meter-top"><span class="cc" data-code="{{ c.label }}">{{ c.label }}</span><span>{{ c.n }} · {{ c.pct }}%</span></div><div class="track"><div class="fill" style="width: {{ c.pct }}%"></div></div></div>
+          {% endfor %}
+          {% if unknown %}<p class="hint">{{ unknown }} visit{{ '' if unknown == 1 else 's' }} with unknown location (location is only available on the live Vercel site).</p>{% endif %}
+          {% if not countries and not unknown %}<p class="hint">No data yet.</p>{% endif %}
+        </div>
+
+        <div class="card">
+          <h2>Cities</h2>
+          {% for c in cities %}
+          <div class="meter"><div class="meter-top"><span>{{ c.label }}{% if c.country %}, <span class="cc" data-code="{{ c.country }}">{{ c.country }}</span>{% endif %}</span><span>{{ c.n }}</span></div><div class="track"><div class="fill" style="width: {{ c.pct }}%"></div></div></div>
+          {% else %}<p class="hint">No data yet.</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="card">
+          <h2>Pages</h2>
+          {% for c in pages %}
+          <div class="meter"><div class="meter-top"><span>{{ 'Home' if c.label == '/' else c.label }}</span><span>{{ c.n }} · {{ c.pct }}%</span></div><div class="track"><div class="fill" style="width: {{ c.pct }}%"></div></div></div>
+          {% else %}<p class="hint">No data yet.</p>{% endfor %}
+        </div>
+        <div class="card">
+          <h2>Where visitors come from</h2>
+          {% for c in referrers %}
+          <div class="meter"><div class="meter-top"><span>{{ c.label }}</span><span>{{ c.n }} · {{ c.pct }}%</span></div><div class="track"><div class="fill" style="width: {{ c.pct }}%"></div></div></div>
+          {% else %}<p class="hint">No data yet.</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Devices</h2>
+        {% for c in devices %}
+        <div class="meter"><div class="meter-top"><span style="text-transform: capitalize">{{ c.label }}</span><span>{{ c.n }} · {{ c.pct }}%</span></div><div class="track"><div class="fill" style="width: {{ c.pct }}%"></div></div></div>
+        {% else %}<p class="hint">No data yet.</p>{% endfor %}
+      </div>
+
+      <div class="card">
+        <h2>Latest visits</h2>
+        <div class="table-wrap">
+          <table class="recent">
+            <thead><tr><th>When (UTC)</th><th>Page</th><th>Location</th><th>Device</th><th>From</th></tr></thead>
+            <tbody>
+              {% for r in recent %}
+              <tr>
+                <td>{{ r.ts.strftime('%d %b %H:%M') }}</td>
+                <td>{{ 'Home' if r.path == '/' else r.path }}</td>
+                <td>{% if r.city %}{{ r.city }}, {% endif %}{% if r.country %}<span class="cc" data-code="{{ r.country }}">{{ r.country }}</span>{% else %}Unknown{% endif %}</td>
+                <td>{{ r.device }}</td>
+                <td>{{ r.referrer or 'Direct' }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" class="hint">No visits yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="hint">Privacy: no cookies are used and IP addresses are never stored. Unique visitors are counted with a one-way daily hash, and the same person opening the same page again within 30 minutes counts as one visit. Bots and your own admin visits are excluded.</p>
+    </div>
+
+    <script>
+      // Turn country codes (RW, US...) into names using the browser's built-in data.
+      try {
+        const names = new Intl.DisplayNames(['en'], { type: 'region' });
+        document.querySelectorAll('.cc').forEach(el => {
+          const name = names.of(el.dataset.code);
+          if (name) el.textContent = name;
+        });
+      } catch (e) {}
+    </script>
+  </body>
+</html>

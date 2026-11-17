@@ -335,4 +335,18 @@ setInterval(() => {
     nextCertificate();
 }, 5000);
 
+// Visit counter: one anonymous ping per page per browser session (no cookies).
+try {
+    const visitKey = 'visit:' + location.pathname;
+    if (!sessionStorage.getItem(visitKey)) {
+        sessionStorage.setItem(visitKey, '1');
+        fetch('/api/visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: location.pathname, ref: document.referrer }),
+            keepalive: true
+        }).catch(() => {});
+    }
+} catch (e) { /* storage blocked: skip counting */ }
+
 console.log('Portfolio loaded successfully! 🚀');

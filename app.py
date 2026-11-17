@@ -8,9 +8,11 @@ Required environment variables (see .env.example):
     DATABASE_URL, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET, ADMIN_PASSWORD, FLASK_SECRET_KEY
 """
+import hashlib
 import os
 import re
 import secrets
+from datetime import datetime, timedelta, timezone
 import urllib.request
 from functools import wraps
 from urllib.parse import unquote, urlparse
@@ -102,6 +104,20 @@ CREATE TABLE profile_images (
 )
 """
 
+VISITS_SCHEMA = """
+CREATE TABLE visits (
+    id       BIGSERIAL PRIMARY KEY,
+    ts       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    path     TEXT NOT NULL,
+    country  TEXT NOT NULL DEFAULT '',
+    region   TEXT NOT NULL DEFAULT '',
+    city     TEXT NOT NULL DEFAULT '',
+    referrer TEXT NOT NULL DEFAULT '',
+    device   TEXT NOT NULL DEFAULT 'desktop',
+    visitor  TEXT NOT NULL
+)
+"""
+
 DEFAULT_PROFILE = "assets/images/profile1.jpg"
 
 _schema_ready = False
@@ -177,6 +193,9 @@ def ensure_schema():
         for label, url in seed_data.PROFILE_IMAGES:
             run("INSERT INTO profile_images (label, url, is_active) VALUES (%s, %s, %s)",
                 (label, url, url == DEFAULT_PROFILE))
+    if not table_exists("visits"):
+        run(VISITS_SCHEMA)
+        run("CREATE INDEX visits_ts_idx ON visits (ts)")
     _schema_ready = True
 
 
@@ -667,6 +686,135 @@ def admin_profile_delete(image_id):
     destroy_asset(gone["public_id"])
     flash("Image deleted.", "ok")
     return redirect(url_for("admin") + "#profile")
+
+
+# --------------------------------------------------------------------------
+# Visit analytics (privacy-friendly: no cookies, no IP addresses stored)
+#
+# Location comes from the free headers Vercel adds to every request
+# (x-vercel-ip-country / -country-region / -city). Unique visitors are counted
+# with a one-way hash of IP + browser + today's date, so nobody can be
+# identified or tracked across days.
+# --------------------------------------------------------------------------
+BOT_RE = re.compile(
+    r"bot|crawl|spider|slurp|facebookexternalhit|headless|lighthouse|pingdom|"
+    r"uptime|monitor|curl|wget|python-requests|httpclient|preview", re.I)
+TRACKED_PATHS = {"/", "/projects"}
+
+
+def client_ip():
+    return (request.headers.get("x-vercel-forwarded-for")
+            or request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+            or request.remote_addr or "")
+
+
+def visitor_hash(ua):
+    salt = f"{app.config['SECRET_KEY']}|{datetime.now(timezone.utc).date().isoformat()}"
+    return hashlib.sha256(f"{salt}|{client_ip()}|{ua}".encode()).hexdigest()[:32]
+
+
+def device_type(ua):
+    if re.search(r"ipad|tablet", ua, re.I):
+        return "tablet"
+    if re.search(r"mobi|android|iphone", ua, re.I):
+        return "mobile"
+    return "desktop"
+
+
+@app.route("/api/visit", methods=["POST"])
+def api_visit():
+    """Called once per page by script.js. Always answers 204; never breaks the page."""
+    try:
+        if session.get("admin"):  # don't count the owner
+            return "", 204
+        ua = request.headers.get("User-Agent", "")
+        if not ua or BOT_RE.search(ua):
+            return "", 204
+        origin = request.headers.get("Origin")
+        if origin and urlparse(origin).netloc != request.host:
+            return "", 204
+        data = request.get_json(silent=True) or {}
+        path = (str(data.get("path", "/")).rstrip("/") or "/")
+        if path not in TRACKED_PATHS:
+            return "", 204
+
+        ref_host = urlparse(str(data.get("ref", ""))[:300]).netloc.lower()
+        ref_host = ref_host.removeprefix("www.")
+        if ref_host == request.host.lower().removeprefix("www."):
+            ref_host = ""
+
+        h = request.headers
+        country = h.get("x-vercel-ip-country", "")[:2].upper()
+        region = unquote(h.get("x-vercel-ip-country-region", ""))[:20]
+        city = unquote(h.get("x-vercel-ip-city", ""))[:80]
+        visitor = visitor_hash(ua)
+
+        ensure_schema()
+        # same person + same page within 30 minutes = one visit
+        if run("SELECT 1 AS x FROM visits WHERE visitor = %s AND path = %s "
+               "AND ts > now() - interval '30 minutes' LIMIT 1",
+               (visitor, path), fetch="one"):
+            return "", 204
+        run("INSERT INTO visits (path, country, region, city, referrer, device, visitor) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (path, country, region, city, ref_host[:100], device_type(ua), visitor))
+    except Exception:
+        app.logger.exception("visit tracking failed")
+    return "", 204
+
+
+def top_list(rows):
+    total = sum(r["n"] for r in rows) or 1
+    return [{"label": r["label"], "n": r["n"], "pct": round(r["n"] * 100 / total)}
+            for r in rows]
+
+
+@app.route("/admin/analytics")
+@admin_required
+def admin_analytics():
+    days = request.args.get("days", 30, type=int)
+    if days not in (7, 30, 90):
+        days = 30
+    ensure_schema()
+    since = "ts >= now() - make_interval(days => %s::int)"
+
+    totals = run(f"SELECT count(*) AS visits, count(DISTINCT visitor) AS people, "
+                 f"count(DISTINCT NULLIF(country, '')) AS countries "
+                 f"FROM visits WHERE {since}", (days,), fetch="one")
+    today = run("SELECT count(*) AS n FROM visits "
+                "WHERE ts >= date_trunc('day', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'",
+                fetch="one")["n"]
+
+    per_day = {r["d"]: r["n"] for r in run(
+        f"SELECT (ts AT TIME ZONE 'UTC')::date AS d, count(*) AS n FROM visits "
+        f"WHERE {since} GROUP BY d", (days,), fetch="all")}
+    end = datetime.now(timezone.utc).date()
+    daily = [(end - timedelta(days=i), per_day.get(end - timedelta(days=i), 0))
+             for i in range(days - 1, -1, -1)]
+
+    def top(expr, extra="", limit=10):
+        return run(f"SELECT {expr} AS label, count(*) AS n FROM visits WHERE {since} {extra} "
+                   f"GROUP BY label ORDER BY n DESC, label LIMIT {limit}", (days,), fetch="all")
+
+    countries = top("country", "AND country <> ''")
+    unknown = run(f"SELECT count(*) AS n FROM visits WHERE {since} AND country = ''",
+                  (days,), fetch="one")["n"]
+    cities = run(
+        f"SELECT city AS label, country, count(*) AS n FROM visits WHERE {since} AND city <> '' "
+        f"GROUP BY city, country ORDER BY n DESC, city LIMIT 10", (days,), fetch="all")
+    total_c = sum(c["n"] for c in cities) or 1
+    for c in cities:
+        c["pct"] = round(c["n"] * 100 / total_c)
+
+    recent = run("SELECT ts, path, country, city, device, referrer FROM visits "
+                 "ORDER BY ts DESC LIMIT 15", fetch="all")
+    return render_template(
+        "analytics.html", days=days, totals=totals, today=today, daily=daily,
+        max_daily=max((n for _, n in daily), default=0) or 1,
+        countries=top_list(countries), unknown=unknown, cities=cities,
+        pages=top_list(top("path")),
+        referrers=top_list(top("COALESCE(NULLIF(referrer, ''), 'Direct')")),
+        devices=top_list(top("device")), recent=recent)
 
 
 @app.errorhandler(413)
